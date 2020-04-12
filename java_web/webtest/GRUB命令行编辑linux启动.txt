@@ -1,0 +1,82 @@
+实例：/boot和Linux的/处于同一个硬盘分区；
+grub> cat (hd0,6)/etc/fstab
+# This file is edited by fstab-sync - see 'man fstab-sync' for details 
+
+LABEL=/                 /                       ext3    defaults        1 1
+/dev/devpts             /dev/pts                devpts  gid=5,mode=620  0 0
+/dev/shm                /dev/shm                tmpfs   defaults        0 0
+/dev/proc               /proc                   proc    defaults        0 0
+/dev/sys                /sys                    sysfs   defaults        0 0
+LABEL=SWAP-hda1         swap                    swap    defaults        0 0
+/dev/hdc                /media/cdrecorder       auto    pamconsole,exec,noauto,managed 0 0
+
+grub> root (hd0,6)
+Filesystem type is ext2fs, partition type 0x83
+
+grub> kernel /boot/在这里按tab补齐，全列出/boot所有的文件；
+Possible files are: grub initrd-2.6.11-1.1369_FC4.img System.map-2.6.11-1.1369_FC4 config-2.6.11-1.1369_FC4 vmlinuz-2.6.11-1.1369_FC4  
+memtest86+-1.55.1 xen-syms xen.gz
+
+grub> kernel /boot/vmlinuz-2.6.11-1.1369_FC4 ro root=/dev/hda7  注：输入
+   [Linux-bzImage, setup=0x1e00, size=0x18e473]
+
+grub> initrd /boot/在这里按tab补齐
+Possible files are: grub initrd-2.6.11-1.1369_FC4.img System.map-2.6.11-1.1369_FC4 config-2.6.11-1.1369_FC4 vmlinuz-2.6.11-1.1369_FC4  
+memtest86+-1.55.1 xen-syms xen.gz
+
+grub> initrd /boot/initrd-2.6.11-1.1369_FC4.img 注;输入intrd文件名的全名；
+   [Linux-initrd @ 0x2e1000, 0x10e685 bytes]
+
+grub> boot
+我们指定Linux的根时，可以用cat出来的fstab的内容中Linux的/分区文件系统标签来替代；也就是kernel 那行中 root=/dev/hd[a-z]X；
+
+grub> cat (hd0,6)/etc/fstab
+# This file is edited by fstab-sync - see 'man fstab-sync' for details
+LABEL=/                 /                       ext3    defaults        1 1
+/dev/devpts             /dev/pts                devpts  gid=5,mode=620  0 0
+/dev/shm                /dev/shm                tmpfs   defaults        0 0
+/dev/proc               /proc                   proc    defaults        0 0
+/dev/sys                /sys                    sysfs   defaults        0 0
+LABEL=SWAP-hda1         swap                    swap    defaults        0 0
+
+/dev/hdc                /media/cdrecorder       auto    pamconsole,exec,noauto,managed 0 0
+
+grub> root (hd0,6)
+Filesystem type is ext2fs, partition type 0x83
+
+grub> kernel /boot/在这里按tab补齐，全列出/boot所有的文件；
+Possible files are: grub initrd-2.6.11-1.1369_FC4.img System.map-2.6.11-1.1369_FC4 config-2.6.11-1.1369_FC4 vmlinuz-2.6.11-1.1369_FC4  
+memtest86+-1.55.1 xen-syms xen.gz
+
+grub> kernel /boot/vmlinuz-2.6.11-1.1369_FC4 ro root=LABEL=/  
+   [Linux-bzImage, setup=0x1e00, size=0x18e473]
+
+grub> initrd /boot/在这里按tab补齐
+Possible files are: grub initrd-2.6.11-1.1369_FC4.img System.map-2.6.11-1.1369_FC4 config-2.6.11-1.1369_FC4 vmlinuz-2.6.11-1.1369_FC4 grubBAK
+memtest86+-1.55.1 xen-syms xen.gz
+
+grub> initrd /boot/initrd-2.6.11-1.1369_FC4.img 注;输入intrd文件名的全名；
+   [Linux-initrd @ 0x2e1000, 0x10e685 bytes]
+
+grub> boot
+如果是/boot和Linux的根分区不在同一个分区，要把kernel和initrd 指令中的/boot去掉，也就是/vmlinuzMMMMMM 或 /initrdNNNN
+
+也可以不用root (hd[0-n]来指定/boot所在分区，要在kernel 和initrd 中指定；比如Linux的/根所位于的分区和/boot所位于的分区都是(hd0,6)，并且我们cat出来的/etc/fstab是Linux的/根分区的文件系统的标签为LABEL=/，引导操作系统的例子如下；
+grub>kernel (hd0,6)/boot/vmlinuz-2.6.11-1.1369_FC4 ro root=LABEL=/
+grub>initrd (hd0,6)/boot/initrd-2.6.11-1.1369_FC4.img
+grub>boot
+或
+
+grub>kernel (hd0,6)/boot/vmlinuz-2.6.11-1.1369_FC4 ro root=/dev/hda7 
+grub>initrd (hd0,6)/boot/initrd-2.6.11-1.1369_FC4.img
+grub>boot
+如果/boot位于 /dev/hda6，也就是(hd0,5)，Linux的根/位于分区/dev/hda7，并且我们cat 出来的/etc/fstab 中/分区的标签为 LABEL=/。下面的两种方法都可以引导；
+
+grub>kernel (hd0,5)/vmlinuz-2.6.11-1.1369_FC4 ro root=LABEL=/
+grub>initrd (hd0,5)/initrd-2.6.11-1.1369_FC4.img
+grub>boot
+或
+
+grub>kernel (hd0,5)/vmlinuz-2.6.11-1.1369_FC4 ro root=/dev/hda7 
+grub>initrd (hd0,5)/initrd-2.6.11-1.1369_FC4.img
+grub>boot 
