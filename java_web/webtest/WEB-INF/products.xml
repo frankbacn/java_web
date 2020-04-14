@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Products>
+<Product id='1'>电视</Product>
+<Product id='2'>洗衣机</Product>
+<Product id='3'>微波炉</Product>
+<Product id='4'>冰箱</Product>
+</Products>
